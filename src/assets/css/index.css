@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: "Microsoft Yahei", "微软雅黑", Arial, Helvetica, sans-serif;
+  font-size: 0.14rem;
+  color: #000;
+  background: #f0f2f5;
+  -webkit-text-size-adjust: none;
+  min-width: 310px;
+}
+a {
+  color: #000;
+  text-decoration: none;
+}
+.van-icon {
+  vertical-align: middle !important;
+}
+.select-option {
+  z-index: 2100 !important;
+}
+.list {
+  background-color: #fff;
+  border-radius: 0.2rem;
+  font-size: 0.3rem;
+  overflow: auto;
+}
+.list .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+/* 背景色 */
+.txt {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  overflow: auto;
+}
+.head {
+  padding: 0.2rem;
+  font-size: 0.4rem;
+  text-align: center;
+  position: relative;
+  border-bottom: 2px solid #f2f2f2;
+}
+.head .back {
+  left: 0.2rem;
+  position: absolute;
+  top: 0.3rem;
+}
+.van-cell {
+  font-size: 0.3rem !important;
+}
+.van-tabs__line {
+  background-color: #8598d5 !important;
+}
+.van-popup {
+  background-color: #f0f2f5 !important;
+}
+/* tab栏 */
+.van-tabbar-item--active {
+  color: #8598d5 !important;
+}
+.van-tabbar {
+  box-sizing: border-box;
+  height: 0.97rem !important;
+}
+.van-tabbar-item {
+  border-right: 1px solid #f0f2f5;
+  box-sizing: border-box;
+  font-size: 0.14rem !important;
+}
