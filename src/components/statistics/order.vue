@@ -24,42 +24,40 @@
         size="small"
         style="width:2.5rem"
         :editable="false"
-        @change="a"
+        @change="a(value1)"
       ></el-date-picker>
       <span style="margin:0 0.2rem">至</span>
       <el-date-picker
         value-format="timestamp"
-        v-model="value1"
+        v-model="value2"
         type="date"
         placeholder="选择日期"
         size="small"
         style="width:2.5rem"
         :editable="false"
-        @change="a"
+        @change="b(value2)"
       ></el-date-picker>
     </div>
-    <div style="padding:0 0.2rem">
-      <!-- 订单状态表 -->
-      <div class="list">
-        <router-link to="">
-          <div class="item">
-            <div>成功</div>
-            <div>
-              <span>123</span>
-              <van-icon name="arrow" />
-            </div>
+    <!-- 订单状态表 -->
+    <div class="list">
+      <router-link to="">
+        <div class="item">
+          <div>成功</div>
+          <div>
+            <span>123</span>
+            <van-icon name="arrow" />
           </div>
-        </router-link>
-        <router-link to="">
-          <div class="item">
-            <div>未支付</div>
-            <div>
-              <span>123</span>
-              <van-icon name="arrow" />
-            </div>
+        </div>
+      </router-link>
+      <router-link to="">
+        <div class="item">
+          <div>未支付</div>
+          <div>
+            <span>123</span>
+            <van-icon name="arrow" />
           </div>
-        </router-link>
-      </div>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -68,12 +66,32 @@
 export default {
   data() {
     return {
-      value1: ""
+      value1: "",
+      value2: "",
+      data: {
+        token: window.sessionStorage.getItem("token"),
+        start_time: "",
+        end_time: ""
+      },
+      list: []
     };
   },
   methods: {
     // 时间搜索
-    a() {}
+    a(v) {
+      this.data.start_time = v / 1000;
+    },
+    b(v) {
+      this.data.end_time = v / 1000;
+    },
+    // 获得列表
+    getlist() {
+      this.$http
+        .post("/order/order_list", this.$qs.stringify(this.data))
+        .then(res => {
+          this.list = res.data;
+        });
+    }
   }
 };
 </script>
@@ -144,7 +162,7 @@ export default {
 .list {
   background-color: #fff;
   border-radius: 0.2rem;
-  margin: 0.2rem 0;
+  margin: 0.2rem auto;
   .title {
     border-bottom: 1px solid #a8b8e2;
     padding: 0.2rem;

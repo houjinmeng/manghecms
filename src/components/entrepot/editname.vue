@@ -11,7 +11,7 @@
       />
     </van-cell-group>
     <div style="text-align:center;margin-top:1rem">
-      <el-button type="primary" style="width:80%">保存</el-button>
+      <el-button style="width:60%;background:#8598d5;color:#fff;font-size:0.35rem">保 存</el-button>
     </div>
   </div>
 </template>

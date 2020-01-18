@@ -2,8 +2,8 @@
   <div class="txt">
     <div class="head">
       <router-link to="/user">
-        <van-icon name="arrow-left" class="back" />
-      </router-link>用户信息
+        <van-icon name="arrow-left" class="back" /> </router-link
+      >用户信息
     </div>
     <van-cell-group>
       <van-field
@@ -29,7 +29,7 @@
       />
     </van-cell-group>
     <div class="select">
-      <span>角色</span>
+      <span style="font-size:0.3rem">角色</span>
       <el-select
         v-model="data.rule_id"
         placeholder="请选择职位"
@@ -46,32 +46,56 @@
       </el-select>
     </div>
     <!-- 库管 -->
-    <div class="select" v-show="data.rule_id==8">
+    <div class="select" v-show="data.rule_id == 8">
       <span style="margin-right:1.3rem">归属</span>
-      <el-select v-model="data.stock_ids" placeholder="请选择仓库" size="small" style="width:41%">
-        <el-option v-for="item in Option" :key="item.id" :label="item.stock_name" :value="item.id"></el-option>
+      <el-select
+        v-model="data.stock_ids"
+        placeholder="请选择仓库"
+        size="small"
+        style="width:41%"
+      >
+        <el-option
+          v-for="item in Option"
+          :key="item.id"
+          :label="item.stock_name"
+          :value="item.id"
+        ></el-option>
       </el-select>
     </div>
     <!-- 设备管理员补货人员 -->
-    <div class="select" v-show="data.rule_id==7||data.rule_id==10">
+    <div class="select" v-show="data.rule_id == 7 || data.rule_id == 10">
       <span style="margin-right:1.3rem">归属</span>
-      <!-- <input type="text" style="padding:0.15rem 0;border:none;background:#f2f2f2;width:70%" v-model="a" disabled @click="showmachine=true"> -->
       <div
-        style="padding:0.15rem 0;border:none;background:#f2f2f2;width:70%;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;"
-        @click="showmachine=true"
-      >{{a}}</div>
+        style="padding:0.15rem 0;border:none;background:#f2f2f2;width:70%;overflow:hidden;white-space: nowrap;text-overflow:ellipsis;height:0.6rem;box-sizing:border-box"
+        @click="showmachine = true"
+      >
+        {{ a }}
+      </div>
     </div>
     <!-- 指定设备 -->
-    <van-popup v-model="showmachine" position="bottom" :style="{ height: '75%' }">
+    <van-popup
+      v-model="showmachine"
+      position="bottom"
+      :style="{ height: '75%' }"
+    >
       <div style="background:#f2f2f2;padding:0.2rem;height:100%" id="edit">
-        <div style="padding:0 0.2rem;font-size:0.35rem;font-weight:800;text-align:center">指定设备</div>
+        <div
+          style="padding:0 0.2rem;font-size:0.35rem;font-weight:800;text-align:center"
+        >
+          指定设备
+        </div>
         <van-search placeholder="请输入设备名称" show-action>
           <div slot="action" class="search">搜索</div>
         </van-search>
         <div class="card">
-          <div class="item" v-for="(item,index) in Option" :key="index" @click="choose(item)">
-            <div class="name">{{item.machine_name}}</div>
-            <div :class="[ item.selected==true ? 'yes' : 'no' ]"></div>
+          <div
+            class="item"
+            v-for="(item, index) in Option"
+            :key="index"
+            @click="choose(item)"
+          >
+            <div class="name">{{ item.machine_name }}</div>
+            <div :class="[item.selected == true ? 'yes' : 'no']"></div>
           </div>
         </div>
         <div class="btn" style="margin-top:0.5rem" @click="baocun">保 存</div>
@@ -109,10 +133,13 @@ export default {
       },
       ruleOption: [],
       Option: []
-    }
+    };
   },
   methods: {
+    // 角色选择
     changerule() {
+      this.machine_name = [];
+      this.a = "请指定设备";
       this.getaddress();
     },
     // 指定设备
@@ -147,22 +174,48 @@ export default {
           Object.assign(this.data, res.data);
           let a = Object.keys(res.data.rule);
           this.data.rule_id = a[0] - 0;
-          this.getaddress(res.data.domain);
-          this.data.stock_ids=res.data.domain[0].stock_id
+          if (res.data.domain != undefined) {
+            if (a == 7 || a == 10) {
+              this.getaddress(res.data.domain);
+            } else if (a == 8) {
+              this.getaddress();
+              if (res.data.domain.length != 0) {
+                this.data.stock_ids = res.data.domain[0].stock_id;
+              }
+            }
+          }
         });
     },
     // 删除用户
-    del() {},
+    del() {
+      this.$dialog.confirm({
+        title: "删除用户",
+        message: "确定删除该用户吗"
+      })
+        .then(() => {
+          this.$http.post('/client/client_delete',this.$qs.stringify(this.data)).then(res=>{
+            if(res.data.code==1){
+              this.$toast.success('删除成功')
+              this.$router.push('/user')
+            }else{
+              this.$toast.fail(res.data.msg)
+            }
+          })
+        })
+        .catch(() => {
+          // on cancel
+        });
+    },
     // 保存
     ok() {
       this.$http
         .post("/client/client_edit_save", this.$qs.stringify(this.data))
         .then(res => {
-          if(res.data.code==1){
-            this.$toast.success('保存成功')
-            this.$router.push('/user')
-          }else{
-            this.$toast.fail('保存失败')
+          if (res.data.code == 1) {
+            this.$toast.success("保存成功");
+            this.$router.push("/user");
+          } else {
+            this.$toast.fail("保存失败");
           }
         });
     },
@@ -184,17 +237,21 @@ export default {
               i.selected = false;
             });
             this.Option = res.data;
-            v.forEach(a => {
-              this.Option.forEach(b => {
-                if (a.machine_id == b.machine_id) {
-                  b.selected = true;
-                  this.machine_id.push(b.machine_id);
-                  this.machine_name.push(b.machine_name);
-                }
+            if (v != undefined) {
+              v.forEach(a => {
+                this.Option.forEach(b => {
+                  if (a.machine_id == b.machine_id) {
+                    b.selected = true;
+                    this.machine_id.push(b.machine_id);
+                    this.machine_name.push(b.machine_name);
+                  }
+                });
               });
-            });
+            }
             this.data.machine_ids = this.machine_id.join(",");
-            this.a = this.machine_name.join(",");
+            if (this.machine_name.length != 0) {
+              this.a = this.machine_name.join(",");
+            }
           }
         });
     }
@@ -250,7 +307,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.25rem;
+  font-size: 0.3rem;
   border-bottom: 1px solid #f2f2f2;
 }
 .select >>> .el-select input {

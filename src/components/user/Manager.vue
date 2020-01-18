@@ -27,7 +27,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 body{background-color: #fff;}
 .title{
     padding: 0.1rem;

@@ -15,7 +15,7 @@
         <img src="../../assets/img/mendian.png" alt style="width:100%;height:100%" />
       </li>
        <li>
-        <video src="../../assets/img/ss.mp4" style="width:100%;height:100%" controls preload="auto" autoplay></video>
+        <video src="" style="width:100%;height:100%" controls preload="auto" autoplay></video>
       </li>
     </ul>
   </div>

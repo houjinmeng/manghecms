@@ -11,6 +11,7 @@ body,
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
 }
 body {
   font-family: "Microsoft Yahei", "微软雅黑", Arial, Helvetica, sans-serif;
@@ -18,7 +19,6 @@ body {
   color: #000;
   background: #f0f2f5;
   -webkit-text-size-adjust: none;
-  min-width: 310px;
 }
 a {
   color: #000;
@@ -28,13 +28,18 @@ a {
   vertical-align: middle !important;
 }
 .select-option {
-  z-index: 2100 !important;
+  z-index: 3300 !important;
+}
+.select-option ul {
+  z-index: 2500 !important;
 }
 .list {
   background-color: #fff;
   border-radius: 0.2rem;
   font-size: 0.3rem;
   overflow: auto;
+  width: 95%;
+  margin: 0 auto;
 }
 .list .item {
   display: flex;
@@ -83,5 +88,25 @@ a {
 .van-tabbar-item {
   border-right: 1px solid #f0f2f5;
   box-sizing: border-box;
-  font-size: 0.14rem !important;
+  font-size: 0.25rem !important;
+}
+.el-input.is-disabled .el-input__inner {
+  color: #000 !important;
+}
+/* 加载中 */
+.loading {
+  width: 2.4rem;
+  height: 2.4rem;
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  left: 50%;
+  margin-left: -1.2rem;
+  top: 50%;
+  margin-top: -1.2rem;
+  z-index: 2500;
+  border-radius: 0.1rem;
+}
+.van-loading__text {
+  font-size: 0.28rem !important;
+  color: #fff !important;
 }

@@ -1,6 +1,7 @@
 <template>
   <div>
     <router-view />
+    <div style="height:0.97rem"></div>
     <van-tabbar v-model="active" route="">
       <van-tabbar-item to="/statistics/market">
         <span>销售统计</span>
@@ -14,7 +15,7 @@
           "
         />
       </van-tabbar-item>
-      <van-tabbar-item to="/statistics/order">
+      <!-- <van-tabbar-item to="/statistics/order">
       <img
           slot="icon"
           slot-scope="props"
@@ -25,7 +26,7 @@
           "
         />
         <span>订单统计</span>
-      </van-tabbar-item>
+      </van-tabbar-item> -->
       <van-tabbar-item to="/statistics/refund">
       <img
           slot="icon"

@@ -2,84 +2,93 @@
   <div>
     <!-- 收益统计 -->
     <div class="shouyi">
-      <div class="top">
-        <div>退款金额</div>
+      <div class="top" style="position: relative;">
+        <router-link to="/home"
+          ><div
+            style="font-size:0.5rem;top:0.18rem;left:0.1rem;position: absolute;color:#fff"
+          >
+            <van-icon name="arrow-left" />
+          </div>
+        </router-link>
+        <div>退款总额</div>
         <span>
-          0.00
+          {{ all_refund }}
           <span style="font-size:0.24rem">元</span>
         </span>
       </div>
     </div>
     <!-- 头部日期搜索 -->
-    <div class="head">
-      <div>今日</div>
-      <div>昨日</div>
-      <div>本月</div>
-      <div>本年</div>
+    <div class="head" style="margin-top:0.1rem">
+      <div :class="[one == true ? 'yes' : 'no']" @click="today">今日</div>
+      <div :class="[two == true ? 'yes' : 'no']" @click="yestday">昨日</div>
+      <div :class="[three == true ? 'yes' : 'no']" @click="month">本月</div>
+      <div :class="[four == true ? 'yes' : 'no']" @click="year">本年</div>
     </div>
     <div class="date">
       <span style="margin:0 0.2rem">时间</span>
       <el-date-picker
         value-format="timestamp"
-        v-model="value1"
+        v-model="start_time"
         type="date"
         placeholder="选择日期"
         size="small"
-        style="width:2.5rem"
+        style="width:2.7rem"
         :editable="false"
         @change="a"
+        :clearable="false"
       ></el-date-picker>
       <span style="margin:0 0.2rem">至</span>
       <el-date-picker
         value-format="timestamp"
-        v-model="value1"
+        v-model="end_time"
         type="date"
         placeholder="选择日期"
         size="small"
-        style="width:2.5rem"
+        style="width:2.7rem"
         :editable="false"
-        @change="a"
+        @change="b"
+        :clearable="false"
       ></el-date-picker>
     </div>
-    <div style="padding:0 0.2rem">
-      <!-- 直营店收入统计 -->
-      <div class="list">
-        <div class="title">直营设备退款统计</div>
-        <router-link to="/market/machine">
-          <div class="item">
-            <div>分组一</div>
-            <div>
-              <span>合计: 0.00</span>
-              <van-icon name="arrow" />
-            </div>
-          </div>
-        </router-link>
-        <div class="item">
-          <div>中关村店</div>
-          <div>
-            <span>合计: 0.00</span>
-            <van-icon name="arrow" />
-          </div>
+    <!-- 直营店收入统计 -->
+    <div class="list" v-show="num != 0">
+      <div class="title">直营-退款统计</div>
+      <div class="item" v-for="(item, index) in list" :key="index">
+        <div>{{ item.machine_name }}</div>
+        <span>合计: {{ item.refund }}</span>
+      </div>
+      <div
+        class="item"
+        v-for="(item, index) in group1"
+        :key="index + 1000"
+        @click="everyMachine(item)"
+      >
+        <div>
+          <span class="name">{{ item.group_name }}</span>
+          <span class="num">{{ item.machine_list.length }}台</span>
+        </div>
+        <div>
+          <span style="display:inline-block;">合计: {{ item.num }}</span>
+          <van-icon name="arrow" />
         </div>
       </div>
-      <!-- 渠道商退款统计 -->
-      <div class="list">
-        <div class="title">渠道商退款统计</div>
-        <router-link to="/market/store">
-          <div class="item">
-            <div>万达</div>
-            <div>
-              <span>合计: 0.00</span>
-              <van-icon name="arrow" />
-            </div>
-          </div>
-        </router-link>
-        <div class="item">
-          <div>望京店</div>
-          <div>
-            <span>合计: 0.00</span>
-            <van-icon name="arrow" />
-          </div>
+    </div>
+    <!-- 渠道商收入统计 -->
+    <div class="list" v-show="list1.length != 0">
+      <div class="title">下级-退款统计</div>
+      <div
+        class="item"
+        v-for="(item, index) in list1"
+        :key="index - 100"
+        @click="everyGroup(item)"
+      >
+        <div>
+          <span class="name">{{ item.org_name }}</span>
+          <span class="num">{{ item.machine_list.length }}台</span>
+        </div>
+        <div>
+          <span style="display:inline-block;">合计: {{ item.num }}</span>
+          <van-icon name="arrow" />
         </div>
       </div>
     </div>
@@ -88,14 +97,186 @@
 
 <script>
 export default {
+  mounted() {
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
+    this.data.start_time = today.getTime() / 1000;
+    this.data.end_time = today.getTime() / 1000 + 24 * 60 * 60 - 1;
+    this.getlist();
+  },
   data() {
     return {
-      value1: ""
+      rule_name: window.sessionStorage.getItem("rule_name"),
+      one: true,
+      two: false,
+      three: false,
+      four: false,
+      start_time: new Date(),
+      end_time: new Date(),
+      data: {
+        token: window.sessionStorage.getItem("token"),
+        start_time: "",
+        end_time: ""
+      },
+      list: [], //直营店
+      group1: [], //直营分组
+      list1: [], //下级
+      num: "", // 直营设备计数
+      all_refund: "" // 退款总额
     };
   },
   methods: {
     // 时间搜索
-    a() {}
+    a() {
+      this.data.start_time = this.start_time / 1000;
+      this.getlist()
+    },
+    b() {
+      this.data.end_time = this.end_time / 1000 + 24 * 60 * 60 - 1;
+      this.getlist();
+    },
+    // 获取列表
+    getlist() {
+      this.list1 = [];
+      this.group1 = [];
+      this.$http
+        .post("/statistics/refund_statistics", this.$qs.stringify(this.data))
+        .then(res => {
+          this.all_refund = res.data.all_refund;
+          this.num = res.data.level1.length;
+          if (res.data.level1_group != undefined) {
+            if (res.data.level1_group.length != 0) {
+              res.data.level1_group.forEach(i => {
+                if (i.machine_ids != "") {
+                  let a = i.machine_ids.split(",");
+                  let obj = {
+                    group_name: i.group_name,
+                    machine_list: [],
+                    num: 0
+                  };
+                  a.forEach(r => {
+                    res.data.level1.forEach(item => {
+                      if (r == item.machine_id) {
+                        obj.machine_list.push(item);
+                        res.data.level1.splice(
+                          res.data.level1.indexOf(item),
+                          1
+                        );
+                      }
+                    });
+                    obj.machine_list.forEach(b => {
+                      obj.num += b.refund;
+                    });
+                  });
+                  this.group1.push(obj);
+                }
+              });
+              this.list = res.data.level1;
+            } else {
+              this.list = res.data.level1;
+            }
+          } else {
+            this.list = res.data.level1;
+          }
+          if (res.data.level2 != undefined) {
+            if (res.data.level2.length != 0) {
+              res.data.org_list.forEach(i => {
+                let obj = {
+                  org_name: "",
+                  machine_list: [],
+                  num: 0,
+                  org_id: ""
+                };
+                res.data.level2.forEach(r => {
+                  if (i.org_id == r.org_id) {
+                    obj.org_id = i.org_id;
+                    obj.org_name = i.org_name;
+                    obj.machine_list.push(r);
+                    this.list1.push(obj);
+                  }
+                });
+                obj.machine_list.forEach(item => {
+                  obj.num += item.refund;
+                });
+              });
+            }
+          }
+        });
+    },
+    // 直营分组明细
+    everyMachine(item) {
+      window.sessionStorage.setItem("group_name", item.group_name);
+      window.sessionStorage.setItem("start_time", this.data.start_time);
+      window.sessionStorage.setItem("end_time", this.data.end_time);
+      this.$router.push("/refundmachine");
+    },
+    // 下级代理明细
+    everyGroup(item) {
+      window.sessionStorage.setItem("org_id", item.org_id);
+      window.sessionStorage.setItem("org_name", item.org_name);
+      window.sessionStorage.setItem("start_time", this.data.start_time);
+      window.sessionStorage.setItem("end_time", this.data.end_time);
+      this.$router.push("/refundstore");
+    },
+    // 头部快捷按钮搜索
+    today() {
+      this.one = true;
+      this.two = false;
+      this.three = false;
+      this.four = false;
+      let today = new Date();
+      today.setHours(0, 0, 0, 0);
+      this.data.start_time = today.getTime() / 1000;
+      this.data.end_time = today.getTime() / 1000 + 24 * 60 * 60 - 1;
+      this.start_time = this.data.start_time * 1000;
+      this.end_time = this.data.end_time * 1000;
+      this.getlist();
+    },
+    yestday() {
+      this.one = false;
+      this.two = true;
+      this.three = false;
+      this.four = false;
+      let today = new Date();
+      today.setHours(0, 0, 0, 0);
+      this.data.start_time = today.getTime() / 1000 - 24 * 60 * 60;
+      this.data.end_time = today.getTime() / 1000 - 1;
+      this.start_time = this.data.start_time * 1000;
+      this.end_time = this.data.end_time * 1000;
+      this.getlist();
+    },
+    month() {
+      this.one = false;
+      this.two = false;
+      this.three = true;
+      this.four = false;
+      let today = new Date();
+      today.setDate(1);
+      today.setHours(0, 0, 0, 0);
+      this.data.start_time = today.getTime() / 1000;
+      let today1 = new Date();
+      //today1.setHours(0, 0, 0, 0);
+      this.data.end_time = Date.parse(today1) / 1000;
+      this.start_time = this.data.start_time * 1000;
+      this.end_time = this.data.end_time * 1000;
+      this.getlist();
+    },
+    year() {
+      this.one = false;
+      this.two = false;
+      this.three = false;
+      this.four = true;
+      let today = new Date();
+      today.setMonth(0);
+      today.setDate(1);
+      today.setHours(0, 0, 0, 0);
+      this.data.start_time = today.getTime() / 1000;
+      let today1 = new Date();
+      this.data.end_time = Date.parse(today1) / 1000;
+      this.start_time = this.data.start_time * 1000;
+      this.end_time = this.data.end_time * 1000;
+      this.getlist();
+    }
   }
 };
 </script>
@@ -145,7 +326,7 @@ export default {
   align-items: center;
   justify-content: space-around;
   border-bottom: 1px solid #f2f2f2;
-  div {
+  .no {
     width: 16%;
     height: 0.46rem;
     text-align: center;
@@ -153,6 +334,16 @@ export default {
     background-color: #ccc;
     font-size: 0.25rem;
     border-radius: 0.1rem;
+  }
+  .yes {
+    width: 16%;
+    height: 0.46rem;
+    text-align: center;
+    line-height: 0.46rem;
+    background-color: #8598d5;
+    font-size: 0.25rem;
+    border-radius: 0.1rem;
+    color: #fff;
   }
 }
 .date {
@@ -166,7 +357,7 @@ export default {
 .list {
   background-color: #fff;
   border-radius: 0.2rem;
-  margin: 0.2rem 0;
+  margin: 0.2rem auto;
   .title {
     border-bottom: 1px solid #a8b8e2;
     padding: 0.2rem;
@@ -177,6 +368,19 @@ export default {
     padding: 0.2rem;
     font-size: 0.3rem;
     border-bottom: 1px solid #f2f2f2;
+    .name {
+      display: inline-block;
+      width: 3rem;
+    }
+    .num {
+      display: inline-block;
+      width: 1.2rem;
+      height: 0.5rem;
+      text-align: center;
+      line-height: 0.5rem;
+      border: 1px solid #a8b8e2;
+      border-radius: 0.2rem;
+    }
   }
 }
 </style>

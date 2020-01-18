@@ -1,26 +1,36 @@
 <template>
   <div>
     <!-- 收益统计 -->
-    <div class="shouyi">
-      <div class="top">
+    <div
+      class="shouyi"
+      v-show="
+        rule_name == '财务管理' ||
+          rule_name == '设备管理员' ||
+          rule_name == '品牌运营管理员' ||
+          rule_name == '品牌监督管理员' ||
+          rule_name == '代理运营管理员' ||
+          rule_name == '代理监督管理员'
+      "
+    >
+      <div class="top" @click="todayin">
         <div>今日总收益</div>
         <span>
-          0.00
+          {{ today }}
           <span style="font-size:0.24rem">元</span>
         </span>
       </div>
       <div class="bottom">
-        <div class="box" style="border-right:1px solid #918baa">
+        <div class="box" style="border-right:1px solid #918baa" @click="yesttodayin">
           <div>昨日总收益</div>
           <span>
-            0.00
+            {{ yesterday }}
             <span style="font-size:0.22rem">元</span>
           </span>
         </div>
-        <div class="box">
+        <div class="box" @click="monthin">
           <div>本月总收益</div>
           <span>
-            0.00
+            {{ month }}
             <span style="font-size:0.22rem">元</span>
           </span>
         </div>
@@ -28,15 +38,50 @@
     </div>
     <div style="padding:0 0.2rem">
       <!-- 功能模块 -->
-      <div class="same_box">
-        <div class="same" style="border-right:1px solid #eeeeee" @click="machine">
+      <div
+        class="same_box"
+        v-show="
+          rule_name == '补货管理员' ||
+            rule_name == '财务管理' ||
+            rule_name == '设备管理员' ||
+            rule_name == '品牌运营管理员' ||
+            rule_name == '品牌监督管理员' ||
+            rule_name == '代理运营管理员' ||
+            rule_name == '代理监督管理员'
+        "
+      >
+        <div
+          class="same"
+          style="border-right:1px solid #eeeeee"
+          @click="machine"
+          v-show="
+            rule_name == '补货管理员' ||
+              rule_name == '设备管理员' ||
+              rule_name == '品牌运营管理员' ||
+              rule_name == '品牌监督管理员' ||
+              rule_name == '代理运营管理员' ||
+              rule_name == '代理监督管理员'
+          "
+        >
           <img src="../../assets/img/shebei.png" alt />
           <div>
             <div class="top">设备管理</div>
-            <div class="bot">在线0/16台 ></div>
+            <div class="bot">在线{{ online }}/{{ count }}台 ></div>
           </div>
         </div>
-        <div class="same" style="margin-left:0.2rem" @click="statistics">
+        <div
+          class="same"
+          style="margin-left:0.2rem"
+          @click="statistics"
+          v-show="
+            rule_name == '财务管理' ||
+              rule_name == '设备管理员' ||
+              rule_name == '品牌运营管理员' ||
+              rule_name == '品牌监督管理员' ||
+              rule_name == '代理运营管理员' ||
+              rule_name == '代理监督管理员'
+          "
+        >
           <img src="../../assets/img/jingying.png" alt />
           <div>
             <div class="top">经营统计</div>
@@ -44,51 +89,153 @@
           </div>
         </div>
       </div>
-      <div class="function">
-        <div class="box" @click="order">
+      <div
+        class="function"
+        v-show="
+          rule_name == '补货管理员' ||
+            rule_name == '库存人员' ||
+            rule_name == '财务管理' ||
+            rule_name == '设备管理员' ||
+            rule_name == '品牌运营管理员' ||
+            rule_name == '品牌监督管理员' ||
+            rule_name == '代理运营管理员' ||
+            rule_name == '代理监督管理员'
+        "
+      >
+        <div
+          class="box"
+          @click="order"
+          v-show="
+            rule_name == '财务管理' ||
+              rule_name == '设备管理员' ||
+              rule_name == '品牌运营管理员' ||
+              rule_name == '品牌监督管理员' ||
+              rule_name == '代理运营管理员' ||
+              rule_name == '代理监督管理员'
+          "
+        >
           <img src="../../assets/img/order.png" alt />
           <div>订单查询</div>
         </div>
-        <div class="box" @click="store">
+        <div
+          class="box"
+          @click="store"
+          v-show="
+            rule_name == '品牌运营管理员' ||
+              rule_name == '品牌监督管理员' ||
+              rule_name == '代理运营管理员' ||
+              rule_name == '代理监督管理员'
+          "
+        >
           <img src="../../assets/img/mendian.png" alt />
-          <div>门店管理</div>
+          <div>分组管理</div>
         </div>
-        <div class="box" @click="entrepot">
+        <div
+          class="box"
+          @click="entrepot"
+          v-show="
+            rule_name == '补货管理员' ||
+              rule_name == '库存人员' ||
+              rule_name == '设备管理员' ||
+              rule_name == '品牌运营管理员' ||
+              rule_name == '品牌监督管理员' ||
+              rule_name == '代理运营管理员' ||
+              rule_name == '代理监督管理员'
+          "
+        >
           <img src="../../assets/img/cangku.png" alt />
           <div>仓库管理</div>
         </div>
-        <div class="box" @click="addmachine">
+        <div
+          class="box"
+          @click="addmachine"
+          v-show="rule_name == '品牌运营管理员'"
+        >
           <img src="../../assets/img/machine.png" alt />
           <div>设备注册</div>
         </div>
       </div>
       <!-- 设备管理 -->
-      <div class="machine">
+      <div
+        class="machine"
+        v-show="
+          rule_name == '补货管理员' ||
+            rule_name == '设备管理员' ||
+            rule_name == '品牌运营管理员' ||
+            rule_name == '品牌监督管理员' ||
+            rule_name == '代理运营管理员' ||
+            rule_name == '代理监督管理员'
+        "
+      >
         <div class="title">设备管理</div>
         <div class="content">
-          <div class="box">
+          <!-- <div class="box">
             <img src="../../assets/img/rizhi.png" alt />
             <div>经营日志</div>
-          </div>
+          </div> -->
           <router-link to="/goodsList">
-            <div class="box">
+            <div
+              class="box"
+              v-show="
+                rule_name == '品牌运营管理员' ||
+                  rule_name == '品牌监督管理员' ||
+                  rule_name == '代理运营管理员' ||
+                  rule_name == '代理监督管理员'
+              "
+            >
               <img src="../../assets/img/goods.png" alt />
               <div>商品管理</div>
             </div>
           </router-link>
-          <div class="box" @click="addgoods">
+          <div
+            class="box"
+            @click="addgoods"
+            v-show="
+              rule_name == '补货管理员' ||
+                rule_name == '设备管理员' ||
+                rule_name == '品牌运营管理员' ||
+                rule_name == '代理运营管理员'
+            "
+          >
             <img src="../../assets/img/buji.png" alt />
             <div>补货管理</div>
           </div>
         </div>
       </div>
       <!-- 常用工具 -->
-      <div class="machine">
+      <div
+        class="machine"
+        v-show="rule_name == '品牌超级管理员' || rule_name == '代理超级管理员'"
+      >
         <div class="title">常用工具</div>
         <div class="content">
           <div class="box" @click="user">
             <img src="../../assets/img/yonghu.png" alt />
             <div>用户管理</div>
+          </div>
+          <div
+            class="box"
+            @click="zuzhi"
+            v-show="rule_name == '品牌超级管理员'"
+          >
+            <img src="../../assets/img/zuzhi.png" alt />
+            <div>组织管理</div>
+          </div>
+          <div
+            class="box"
+            @click="uplevel"
+            v-show="rule_name == '品牌超级管理员'"
+          >
+            <img src="../../assets/img/uplevel.png" alt />
+            <div>上传升级包</div>
+          </div>
+          <div
+            class="box"
+            @click="upmachine"
+            v-show="rule_name == '品牌超级管理员'"
+          >
+            <img src="../../assets/img/machineUp.png" alt />
+            <div>设备升级</div>
           </div>
         </div>
       </div>
@@ -98,10 +245,54 @@
 
 <script>
 export default {
+  mounted() {
+    this.getlist();
+  },
   data() {
-    return {};
+    return {
+      rule_name: window.sessionStorage.getItem("rule_name"),
+      data: {
+        token: window.sessionStorage.getItem("token")
+      },
+      today: "0",
+      month: "0",
+      yesterday: "0",
+      count: "0",
+      online: "0"
+    };
   },
   methods: {
+    // 今日收益
+    todayin(){
+      window.sessionStorage.setItem('date',1)
+      this.$router.push('/statistics/market')
+    },
+    // 昨日收益
+    yesttodayin(){
+      window.sessionStorage.setItem('date',2)
+      this.$router.push('/statistics/market')
+    },
+     // 本月收益
+    monthin(){
+      window.sessionStorage.setItem('date',3)
+      this.$router.push('/statistics/market')
+    },
+    // 获取统计数据
+    getlist() {
+      this.$http
+        .post("/index/home", this.$qs.stringify(this.data))
+        .then(res => {
+          this.today = res.data.today_today;
+          this.month = res.data.month_today;
+          this.yesterday = res.data.yesterday;
+          this.count = res.data.machine_count;
+          this.online = res.data.online_count;
+        });
+    },
+    // 组织管理
+    zuzhi() {
+      this.$router.push("/zuzhi");
+    },
     // 设备管理
     machine() {
       this.$router.push("/machinelist");
@@ -124,7 +315,7 @@ export default {
     },
     // 仓库管理
     entrepot() {
-      this.$router.push("/entrepot");
+      this.$router.push("/entrepot/pool");
     },
     // 用户管理
     user() {
@@ -133,11 +324,19 @@ export default {
     // 补货管理
     addgoods() {
       this.$router.push("/addgoods");
+    },
+    // 升级管理
+    uplevel(){
+      this.$router.push("/uplevel")
+    },
+    // 设备升级
+    upmachine(){
+      this.$router.push("/upmachine")
     }
   }
 };
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 body {
   background: #f0f2f5 !important;
 }
@@ -146,7 +345,7 @@ body {
   width: 100%;
   color: #ffffff;
   margin-bottom: 0.2rem;
-  background: url('../../assets/img/home.png') top left no-repeat;
+  background: url("../../assets/img/home.png") top left no-repeat;
   background-size: cover;
   .top {
     height: 3.48rem;

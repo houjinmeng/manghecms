@@ -196,7 +196,7 @@ export default {
             this.$toast.success('保存成功')
             this.$router.push('/user')
           }else{
-            this.$toast.fail('保存失败')
+            this.$toast.fail(res.data.msg)
           }
         });
     },

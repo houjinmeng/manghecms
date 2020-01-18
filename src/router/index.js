@@ -24,8 +24,10 @@ import refundMachine from '@/components/statistics/refundMachine'
 import refundStore from '@/components/statistics/refundStore'
 // 订单管理
 import order from '@/components/main/order'
-// 门店管理
-import Store from '@/components/main/store'
+// 分组管理
+import Store from '@/components/group/index'
+import groupmachine from '@/components/group/machine'
+import groupaddmachine from '@/components/group/addmachine'
 // 仓库管理
 import entrepot from '@/components/entrepot/index'
 import entrepotMachine from '@/components/entrepot/machine'
@@ -48,11 +50,25 @@ import adduser from '@/components/user/adduser'
 import addgoods from '@/components/addgoods/index'
 import photos from '@/components/addgoods/photos'
 import everymachine from '@/components/addgoods/everymachine'
+import addrecord from '@/components/addgoods/addrecord'
+import recordmessage from '@/components/addgoods/recordmessage'
+import afterphotos from '@/components/addgoods/afterphotos'
+// 组织管理
+import zuzhi from '@/components/main/zuzhi'
+import addzuzhi from '@/components/main/addzuzhi'
+import editzuhi from '@/components/main/editzuzhi'
+
+import uplevel from '@/components/main/uplevel'
+import upmachine from '@/components/main/upmachine'
+import checkmachine from '@/components/main/checkMachine'
 
 Vue.use(Router)
 
 var router = new Router({
   routes: [
+    { path: '/checkmachine',component:checkmachine},
+    { path: '/uplevel', component:uplevel},
+    { path: '/upmachine', component:upmachine},
     { path: '/', name: 'login', component: login },
     { path: '/home', component: home },
     { path: '/machinelist', component: machinelist },
@@ -74,13 +90,14 @@ var router = new Router({
     { path: '/refundStore', component: refundStore },
     { path: '/order', component: order },
     { path: '/store', component: Store },
-    { path: '/entrepot', component: entrepot, redirect:'/entrepot/pool',
-      children:[
-        { path:'/entrepot/pool', component: entrepotPool },
-        { path:'/entrepot/store', component: entrepotStore },
-        { path:'/entrepot/machine', component: entrepotMachine },
-        { path:'/entrepot/person', component: entrepotPerson },
-    ]},
+    // { path: '/entrepot', component: entrepot, redirect:'/entrepot/pool',
+    //   children:[
+    //     { path:'/entrepot/pool', component: entrepotPool },
+    //     { path:'/entrepot/store', component: entrepotStore },
+    //     { path:'/entrepot/machine', component: entrepotMachine },
+    //     { path:'/entrepot/person', component: entrepotPerson },
+    // ]},
+    { path:'/entrepot/pool', component: entrepotPool },
     { path: '/entrepot/editname', component: entrepotName },
     { path: '/entrepot/check', component: entrepotCheck },
     { path: '/goodsList', component: goodsList },
@@ -95,7 +112,28 @@ var router = new Router({
     { path: '/adduser', component: adduser },
     { path: '/huodao', component: huodao },
     { path: '/everymachine', component: everymachine},
-    { path: '/sucai', component: sucai}
+    { path: '/sucai', component: sucai},
+    { path: '/zuzhi', component: zuzhi},
+    { path: '/addzuzhi', component: addzuzhi},
+    { path: '/addrecord', component: addrecord},
+    { path: '/recordmessage', component: recordmessage},
+    { path: '/afterphotos', component:afterphotos},
+    { path: '/group/machine', component: groupmachine},
+    { path: '/group/addmachine', component: groupaddmachine},
+    { path: '/editzuzhi', component: editzuhi},
   ]
+})
+router.beforeEach((to, from, next) => {
+  // 请求"login"就直接通过
+  if (to.path === '/'||to.path === '/checkmachine') {
+    return next()
+  }
+  // 请求"非login"，就判断token
+  var token = window.sessionStorage.getItem('token')
+  if (!token) {
+    return next('/')
+  }
+
+  next() // 请继续你的旅行
 })
 export default router

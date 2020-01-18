@@ -1,5 +1,14 @@
 <template>
-  <div class="txt">
+  <div class="txt1">
+    <div class="loading" v-show="tishi">
+      <van-loading
+        type="spinner"
+        size="0.6rem"
+        :vertical="true"
+        style="margin:0.6rem 0"
+        >登陆中...</van-loading
+      >
+    </div>
     <div class="title">盲盒后台管理系统</div>
     <div class="box">
       <div style="margin-bottom:0.3rem" class="same">
@@ -9,22 +18,33 @@
           placeholder="手机号"
           @blur="phonetest(data.account)"
           oninput="if(value.length>11)value=value.slice(0,11)"
+          @keyup.13="login"
         />
         <transition name="el-zoom-in-top">
           <div
             v-show="phoneShow"
             style="color:red;;font-size:0.25rem;line-height:0;position: absolute;bottom:-0.12rem"
-          >请填写正确格式的手机号</div>
+          >
+            请填写正确格式的手机号
+          </div>
         </transition>
       </div>
       <div class="same">
         <img src="../../assets/img/mima.png" alt />
-        <input v-model="data.password" placeholder="密码" />
+        <input
+          v-model="data.password"
+          placeholder="密码"
+          @blur="blur"
+          type="password"
+          @keyup.13="login"
+        />
         <transition name="el-zoom-in-top">
           <div
             v-show="passwordShow"
             style="color:red;;font-size:0.25rem;line-height:0;position: absolute;bottom:-0.12rem"
-          >请输入密码</div>
+          >
+            请输入密码
+          </div>
         </transition>
       </div>
     </div>
@@ -48,7 +68,7 @@ export default {
             this.$toast.success("绑定成功");
             this.$router.push("/home");
           } else {
-            this.$toast.fial("绑定失败");
+            this.$toast.fail(res.data.msg);
             this.$router.push("/addmachine");
           }
         })
@@ -61,15 +81,23 @@ export default {
   },
   data() {
     return {
+      tishi: false,
       data: {
-        account: "user1",
-        password: "111111"
+        // account: "user1",
+        // password: "111111"
+        account: "",
+        password: ""
       },
       phoneShow: false,
-      passwordShow: false
+      passwordShow: false,
     };
   },
   methods: {
+    blur() {
+      document.body.addEventListener("focusout", function() {
+        window.scrollTo(0, 0);
+      });
+    },
     login() {
       if (this.data.account == "") {
         this.phoneShow = true;
@@ -78,6 +106,7 @@ export default {
         this.passwordShow = true;
         return false;
       } else {
+        this.tishi = true;
         this.$http
           .post("/user/login", this.$qs.stringify(this.data))
           .then(res => {
@@ -86,13 +115,28 @@ export default {
                 "token",
                 res.data.data.userinfo.token
               );
+              window.sessionStorage.setItem(
+                "rule_name",
+                res.data.data.rule_name
+              );
               this.$router.push("/home");
+              this.tishi = false;
+            } else {
+              this.tishi = false;
+              this.$toast.fail(res.data.msg);
             }
-          });
+          })
+          .catch(error=>{
+            this.tishi=false
+            this.$toast.fail('网络错误')
+          })
       }
     },
     // 手机号验证格式
     phonetest(value) {
+      document.body.addEventListener("focusout", function() {
+        window.scrollTo(0, 100);
+      });
       let reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
       if (value == "") {
         this.phoneShow = false;
@@ -113,10 +157,12 @@ export default {
   }
 };
 </script>
-<style lang='less' scoped>
-.txt {
+<style lang="less" scoped>
+.txt1 {
   background: url("../../assets/img/login.png") top left no-repeat;
   background-size: cover;
+  height: 100%;
+  overflow: hidden;
 }
 .title {
   text-align: center;

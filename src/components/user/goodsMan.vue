@@ -14,7 +14,7 @@
       <van-field v-model="role" label="角色" />
       <van-field v-model="machine" label="指定设备" />
     </van-cell-group>
-    <div class="btn">
+    <div class="btn1">
         <el-button type="primary">删除用户</el-button>
         <el-button type="primary">保存用户</el-button>
     </div>
@@ -33,7 +33,7 @@ export default {
   }
 };
 </script>
-<style scoped lang='less'>
+<style lang='less' scoped>
 body{background-color: #fff;}
 .title {
   padding: 0.2rem;
@@ -47,7 +47,7 @@ body{background-color: #fff;}
     top: 0.3rem;
   }
 }
-.btn{
+.btn1{
     margin-top: 0.5rem;
     display: flex;
     justify-content: space-around
